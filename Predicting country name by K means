@@ -1,0 +1,37 @@
+install.packages("factoextra") # to plot k-means clusters
+library(factoextra)
+locations <- read.csv("../input/world-cities/worldcities.csv")
+head(locations)
+dataset <- subset(locations, select = c(lng, lat))
+dataset <- dataset[, c(2,1)] # interchanging the columns 
+head(dataset)
+cities<-plot(x = dataset$lng,y = dataset$lat,
+         
+         xlab = "Longitude",
+         ylab = "Latitude",
+         main = "Locations of all cities"
+)
+cities
+continents <- kmeans(dataset,6,nstart = 25)
+continents$size # gives the size of each of the 6 clusters
+# Clusters plot
+fviz_cluster(continents, data = dataset, label=NA)+coord_flip()
+# WITH PRE-DEFINED CENTERS
+# Alloting lat, long centers for each continent
+con_centers <- matrix(c(58.152158,-118.701860,-17.911852,-57.167183,
+                        6.664615,21.818767,51.002693,7.028192,
+                        48.365006,95.363121,-31.293584,141.955051)
+                      ,ncol=2, byrow=TRUE)
+# k means clustering
+continents_centers <- kmeans(dataset,centers = con_centers,nstart = 25)
+continents_centers$size # size of the continents' clusters
+# Clusters plot
+fviz_cluster(continents_centers, data = dataset, label=NA)+coord_flip()
+print("Continents' cluster centers")
+continents$centers
+print("Continents' model evaluation")
+continents$betweenss/continents$totss # sum of squares by cluster
+print("continents_centers' cluster centers")
+continents_centers$centers
+print("continents_centers' model evaluation")
+continents_centers$betweenss/continents_centers$totss # sum of squares by cluster
