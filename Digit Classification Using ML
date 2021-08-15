@@ -1,0 +1,92 @@
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+from sklearn.linear_model import LogisticRegression
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.naive_bayes import GaussianNB
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import confusion_matrix,accuracy_score, classification_report
+
+import warnings
+warnings.filterwarnings('ignore')
+df = pd.read_csv('../input/digit-recognizer/train.csv')
+df.head()
+df.shape
+def print_image(index):
+    some_digit = df.iloc[index,1:].values
+    some_digit_img = some_digit.reshape(28,28)
+    plt.imshow(some_digit_img,'binary')
+ print_image(1900)
+ x = df.drop('label', axis=1)
+print("features shape: ", x.shape)
+y = df.label
+print("Target shape: ", y.shape)
+for i in range(10):
+    #plt.subplot(5,4, i+1)
+    plt.xticks([])
+    plt.yticks([])
+    print_image(i)
+    plt.xlabel('label:{}'.format(y[i]))
+    plt.show()
+from sklearn.model_selection import train_test_split
+X_train, X_test, y_train, y_test = train_test_split(x, y, random_state=42, test_size=0.3)
+print('Shape of X_train:', X_train.shape)
+print('Shape of y_train:', y_train.shape)
+print('Shape of X_test:', X_test.shape)
+print('Shape of y_test:', y_test.shape)
+dt = DecisionTreeClassifier()
+dt = dt.fit(X_train,y_train) 
+y_pred_test_dtf = dt.predict(X_test)
+y_pred_train_dtf = dt.predict(X_train)
+y_pred_test_dtf
+y_pred_train_dtf
+print ("Accuracy on Training Data", dt.score(X_train, y_train))
+print ("Accuracy on Test Data", dt.score(X_test, y_test))
+print("Confusion Matrix: ")
+print(confusion_matrix(y_test, y_pred_test_dtf))
+
+print("\nClassification Report:")
+print(classification_report(y_test, y_pred_test_dtf))
+rf = RandomForestClassifier()
+rf.fit(X_train, y_train)
+train_pred_rf = rf.predict(X_train)
+pred_rf = rf.predict(X_test)
+print("Training Accuracy: ",accuracy_score(y_train, train_pred_rf))
+print("Test Accuracy: ",accuracy_score(y_test, pred_rf))
+print("Confusion Matrix: ")
+print(confusion_matrix(y_test, pred_rf))
+
+print("\nClassification Report:")
+print(classification_report(y_test, pred_rf))
+nb = GaussianNB()
+nb = nb.fit(X_train, y_train)
+y_prednb_test = nb.predict(X_test)
+y_prednb_train = nb.predict(X_train)
+y_prednb_test
+y_prednb_train
+print ("Accuracy on Training Data", nb.score(X_train, y_train))
+print ("Accuracy on Test Data", nb.score(X_test, y_test))
+print("Confusion Matrix: ")
+print(confusion_matrix(y_test, y_prednb_test))
+
+print("\nClassification Report:")
+print(classification_report(y_test, y_prednb_test))
+df1 = pd.read_csv('../input/digit-recognizer/test.csv')
+df1.head()
+df1.shape
+def print_testimage(index):
+    some_digit = df1.iloc[index].values
+    some_digit_img = some_digit.reshape(28,28)
+    plt.imshow(some_digit_img,'binary')
+print_testimage(480)
+testdata2 = dt.predict(df1)
+testdata2
+testdata3 = nb.predict(df1)
+testdata3
+testdata4 = rf.predict(df1)
+testdata4
+print_testimage(1897)
+testdata2[1897]
+testdata3[1897]
